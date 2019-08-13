@@ -16,9 +16,9 @@
   };
 
   window.delayRedirectToModule = function() {
-    return setInterval(function() {
+    return setTimeout(function() {
       return location.reload();
-    }, 3000);
+    }, 10000);
   };
 
   path = [location.protocol, '//', location.host, location.pathname].join('');

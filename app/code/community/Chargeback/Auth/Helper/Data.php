@@ -1,41 +1,49 @@
 <?php
 
 class Chargeback_Auth_Helper_Data extends Mage_Core_Helper_Abstract {
-  public function checkAPIAccount()
-  {
-    if (is_object($this->role()) && $this->role()->getId() > 0) {
-      if (is_object($this->consumer()) && $this->consumer()->getId() > 0) {
-        return $this->consumer();
-      }
-    }
-    return false;
-  }
+  public $name = 'chargeback';
 
+  // Get user role by name 'chargeback'
   public function role()
   {
-    return Mage::getModel('api/roles')->getCollection()->addFieldToFilter('role_name',array('eq'=>"Chargeback Admin"))->load()->getFirstItem();
+    return Mage::getModel('admin/role')->getCollection()->addFieldToFilter('role_name',array('eq'=>$this->name))->load()->getFirstItem();
   }
 
+  // Get OAuth role by name 'chargeback'
+  public function oauthRole()
+  {
+    return Mage::getModel('api2/acl_global_role')->getCollection()->addFieldToFilter('role_name',array('eq'=>$this->name))->load()->getFirstItem();
+  }
+
+  // Get user by name 'chargeback'
   public function consumer()
   {
-    return Mage::getModel('api/user')->getCollection()->addFieldToFilter('username',array('eq'=>'chargeback'))->load()->getFirstItem();
+    return Mage::getModel('admin/user')->getCollection()->addFieldToFilter('username',array('eq'=>$this->name))->load()->getFirstItem();
   }
 
-  public function buildApiUrl(/*.string.*/ $token, /*.string.*/ $key, /*.string.*/ $pass)
-  {
-    return Mage::getStoreConfig('chargeback/general/url')."auth_tokens/connect?_cb_auth_token=$token&username=$key&password=$pass&name=Magento&url=".Mage::getBaseUrl().'api/xmlrpc';
-  }
-
+  // Generate URL for disputer to accept
   public function connect()
   {
-    $this->createAPIAccount();
-    return $this->buildApiUrl(Mage::getSingleton('admin/session')->getCbAuthToken(),'chargeback',Mage::getSingleton('admin/session')->getData('chargeback_password'));
+    $pass = $this->createAPIAccount();
+    $token = Mage::getSingleton('admin/session')->getCbAuthToken();
+    return Mage::getStoreConfig('chargeback/general/url')."auth_tokens/connect?_cb_auth_token=$token&username=$this->name&password=$pass&name=Magento&url=".Mage::getStoreConfig(Mage_Core_Model_Url::XML_PATH_SECURE_URL).'api/rest';
   }
 
   public function resetPluginSettingsRemoveUser()
   {
-    $this->role()->delete()->save();
-    $this->consumer()->delete()->save();
+    // Delete OAuth role
+    if($this->oauthRole()->getRoleName() == $this->name){
+      $this->oauthRole()->delete()->save();
+    }
+    // Delete user role
+    if($this->role()->getRoleName() == $this->name){
+      $this->role()->delete()->save();
+    }
+    // Delete user role
+    if($this->consumer()->getUsername() == $this->name){
+      $this->consumer()->delete()->save();
+    }
+    // set status of connection to false
     $this->setComplete(false);
   }
 
@@ -52,43 +60,56 @@ class Chargeback_Auth_Helper_Data extends Mage_Core_Helper_Abstract {
 
   public function createAPIAccount()
   {
-    $account = $this->checkAPIAccount();
+    $apiPassword = md5(time());
+    $this->resetPluginSettingsRemoveUser();
 
-    if (!is_object($account)) {
+    // Creates the OAuth role
+    $oauth_role = Mage::getModel('api2/acl_global_role')
+      ->setRoleName($this->name)
+      ->setCurrentPassword($apiPassword)
+      ->save();
 
-      $apiPassword = md5(time());
+    // Creates the permisisons for the OAuth role above
+    $oauth_rule = Mage::getModel('api2/acl_global_rule')
+      ->setRoleId($oauth_role->getId())
+      ->setResourceId("all")
+      ->setPrivilege(null)
+      ->save();
 
-      $api_role = Mage::getModel('api/roles')
-        ->setName('Chargeback Admin')
-        ->setRoleType('G')
-        ->save();
+    // Creates admin user named chargeback
+    $user = Mage::getModel('admin/user')
+      ->setData(array(
+        'username'  => $this->name,
+        'firstname' => $this->name,
+        'lastname'  => $this->name,
+        'email'     => 'apiuser@chargeback.com',
+        'password'  => $apiPassword,
+        'api2_roles'=> array($oauth_role->getId()),
+        'is_active' => 1
+      ))->save();
 
-      Mage::getModel('api/rules')
-        ->setRoleId($api_role->getId())
-        ->setResources(array('all'))
-        ->saveRel();
+    // Assigns the user to the main admin role
+    Mage::getModel("admin/role")
+      ->setParentId(1)
+      ->setTreeLevel(2)
+      ->setRoleType('U')
+      ->setRoleName($this->name)
+      ->setUserId($user->getId())
+      ->save();
 
-      $userapi = Mage::getModel('api/user')
-        ->setData(array(
-          'username' => 'chargeback',
-          'firstname' => 'Chargeback',
-          'lastname' => 'User',
-          'email' => 'apiuser@chargeback.com',
-          'is_active' => 1,
-          'api_key' => $apiPassword,
-          'api_key_confirmation' => $apiPassword,
-          'roles' => array($api_role->getId()) // your created custom role
-        ));
+    $oauth = Mage::helper('oauth');
 
-
-      $userapi->save();
-
-      $userapi->setRoleIds(array($api_role->getId()))->setRoleUserId($userapi->getUserId())
-        ->saveRelations();
-
-      Mage::getSingleton('admin/session')->setData('chargeback_password',$apiPassword);
-
-    }
+    // Creates the OAuth key and secret that must be used after successful login
+    $key = $oauth->generateConsumerKey();
+    $secret = $oauth->generateConsumerSecret();
+    Mage::getModel('oauth/consumer')
+      ->setData(array(
+       'key'    => $key,
+       'secret' => $secret,
+       'name'   => $this->name,
+       'current_password' => $apiPassword
+    ))->save();
+    return $apiPassword.':'.$key.':'.$secret;
 
   }
 

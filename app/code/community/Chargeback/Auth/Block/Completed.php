@@ -7,6 +7,6 @@ class Chargeback_Auth_Block_Completed extends Mage_Adminhtml_Block_Abstract impl
 		Mage::app()->getCacheInstance()->cleanType('config');
 		Mage::dispatchEvent('adminhtml_cache_refresh_type', array('type' => 'config'));
 
-		return $this->getBlockHtml('htmlBlock');
+		return $this->getBlockHtml('connect');
 	}
 }

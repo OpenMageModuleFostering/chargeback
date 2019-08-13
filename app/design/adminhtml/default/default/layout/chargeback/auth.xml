@@ -4,7 +4,7 @@
 		<reference name="head">
 			<action method="addJs"><script>adminhtml/chargeback/chargeback.js</script></action>
 			<action method="addCss"><name>chargeback.css</name></action>
-      <block type="core/template" name="htmlBlock" template="htmlBlock.phtml" />
+      <block type="core/template" name="connect" template="chargeback/connect.phtml" />
 		</reference>
 	</default>
 </layout>
