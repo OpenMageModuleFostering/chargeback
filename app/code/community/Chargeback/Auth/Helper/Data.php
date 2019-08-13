@@ -109,6 +109,24 @@ class Chargeback_Auth_Helper_Data extends Mage_Core_Helper_Abstract {
        'name'   => $this->name,
        'current_password' => $apiPassword
     ))->save();
+
+    $existing = Mage::getModel('api2/acl_filter_attribute')->getCollection()->addFieldToFilter('user_type',array('eq'=>'admin'))->load()->getFirstItem();
+    if($existing){
+      $existing
+        ->setUserType('admin')
+        ->setResourceId('all')
+        ->setOperation('')
+        ->setAllowedAttributes(null)
+        ->save();
+    } else {
+      Mage::getModel('api2/acl_filter_attribute')
+        ->setData(array(
+          'user_type'          => 'admin',
+          'resource_id'        => "all",
+          'operation'          => '',
+          'allowed_attributes' => null
+      ))->save();
+    }
     return $apiPassword.':'.$key.':'.$secret;
 
   }
