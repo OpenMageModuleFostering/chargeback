@@ -31,11 +31,7 @@ class Chargeback_Auth_Model_Observer
 			return;
 		}
 
-		if ($r->getParam("cb_return_status") == "failure"){
-			$helper->setComplete(0);
-		}
 		if ($r->getParam("cb_return_status") == "success") {
-			$helper->setComplete();
 			$admin->unsetData('chargeback_password');
 		}
 

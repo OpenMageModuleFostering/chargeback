@@ -43,19 +43,11 @@ class Chargeback_Auth_Helper_Data extends Mage_Core_Helper_Abstract {
     if($this->consumer()->getUsername() == $this->name){
       $this->consumer()->delete()->save();
     }
-    // set status of connection to false
-    $this->setComplete(false);
-  }
-
-  public function setComplete($complete = true)
-  {
-    Mage::getConfig()->saveConfig('chargeback/general/completed', $complete ? true : false, 'default', 0);
   }
 
   public function getComplete()
   {
-    Mage::app()->getStore()->resetConfig();
-    return Mage::getStoreConfig('chargeback/general/completed');
+    return ($this->oauthRole()->getRoleName() == $this->name) && ($this->role()->getRoleName() == $this->name) && ($this->consumer()->getUsername() == $this->name);
   }
 
   public function createAPIAccount()
