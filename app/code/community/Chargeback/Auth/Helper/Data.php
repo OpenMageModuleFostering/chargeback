@@ -26,7 +26,7 @@ class Chargeback_Auth_Helper_Data extends Mage_Core_Helper_Abstract {
   {
     $pass = $this->createAPIAccount();
     $token = Mage::getSingleton('admin/session')->getCbAuthToken();
-    return Mage::getStoreConfig('chargeback/general/url')."auth_tokens/connect?_cb_auth_token=$token&username=$this->name&password=$pass&name=Magento&url=".Mage::getStoreConfig(Mage_Core_Model_Url::XML_PATH_SECURE_URL).'api/rest&lookup='.Mage::getConfig()->getNode('admin/routers/adminhtml/args/frontName');
+    return Mage::getStoreConfig('chargeback/general/url')."auth_tokens/connect?_cb_auth_token=$token&username=$this->name&password=$pass&name=Magento&url=".Mage::getStoreConfig(Mage_Core_Model_Url::XML_PATH_SECURE_URL).'api/rest&security_questions[][question]=admin_path&security_questions[][answer]='.Mage::getConfig()->getNode('admin/routers/adminhtml/args/frontName');
   }
 
   public function resetPluginSettingsRemoveUser()
