@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<config>
+	<tabs>
+		<chargeback_auth translate="label" module="chargeback_auth">
+			<label>Chargeback</label>
+			<class>chargeback-logo</class>
+		</chargeback_auth>
+	</tabs>
+	<sections>
+		<chargeback translate="label" module="chargeback_auth">
+			<label>Setup</label>
+			<tab>chargeback_auth</tab>
+			<sort_order>120</sort_order>
+			<show_in_default>1</show_in_default>
+			<show_in_website>0</show_in_website>
+			<show_in_store>0</show_in_store>
+			<expanded>0</expanded>
+			<groups>
+				<connection translate="label" module="chargeback_auth">
+					<label>Connection</label>
+					<sort_order>120</sort_order>
+					<show_in_default>1</show_in_default>
+					<show_in_website>1</show_in_website>
+					<show_in_store>1</show_in_store>
+					<expanded>1</expanded>
+					<fields>
+						<url translate="label">
+							<label>URL</label>
+							<frontend_model>chargeback_auth/hidden</frontend_model>
+							<sort_order>120</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+						</url>
+						<completed translate="label">
+							<label>Completed</label>
+							<frontend_model>chargeback_auth/completed</frontend_model>
+							<frontend_type>text</frontend_type>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+						</completed>
+						<key translate="label">
+							<label>Key</label>
+							<frontend_model>chargeback_auth/hidden</frontend_model>
+							<frontend_type>text</frontend_type>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+						</key>
+						<pass translate="label">
+							<label>Pass</label>
+							<frontend_model>chargeback_auth/hidden</frontend_model>
+							<frontend_type>text</frontend_type>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+						</pass>
+					</fields>
+				</connection>
+			</groups>
+		</chargeback>
+	</sections>
+</config>

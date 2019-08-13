@@ -1,0 +1,41 @@
+<config>
+	<api>
+		<resources>
+			<gateways translate="title" module="chargeback_auth">
+				<model>chargeback_auth/gateways_api</model>
+				<title>Gateways Resource</title>
+				<acl>gateways</acl>
+				<methods>
+					<list translate="title" module="chargeback_auth">
+						<title>Retrieve Gateway List</title>
+						<method>gateways</method>
+						<acl>gateways/list</acl>
+					</list>
+				</methods>
+				<faults module="chargeback_auth">
+					<data_invalid>
+						<code>100</code >
+						<message>Invalid gateway data. Details in error message.</message>
+					</data_invalid>
+					<filters_invalid>
+						<code>101</code >
+						<message>Invalid filters specified. Details in error message.</message>
+					</filters_invalid>
+				</faults>
+			</gateways>
+		</resources>
+		<acl>
+			<resources>
+				<all>
+				</all>
+				<gateways translate="title" module="chargeback_auth">
+					<title>Gateways Resource</title>
+					<list translate="title" module="customer">
+						<title>Retrieve Gateway List</title>
+						<acl>gateways/list</acl>
+					</list>
+				</gateways>
+			</resources>
+		</acl>
+	</api>
+</config>

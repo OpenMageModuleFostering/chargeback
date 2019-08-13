@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<config>
+	<modules>
+		<Chargeback_Auth>
+			<active>true</active>
+			<codePool>community</codePool>
+			<depends>
+				<Mage_Api2/>
+			</depends>
+		</Chargeback_Auth>
+	</modules>
+</config>
