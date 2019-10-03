@@ -1,16 +1,19 @@
 {
-    "name": "OpenMageModuleFostering/Chargeback",
+    "name": "OpenMageModuleFostering\/Chargeback",
     "type": "magento-module",
     "license": "GPLv2-or-later",
     "homepage": "",
     "description": "Take control of customer disputes with issuer Alerts, automated Responses and detailed Reporting.",
     "authors": [
-    {
-        "name": "Scott Stone",
-        "email": "datasources@chargeback.com"
-    }
-],
+        {
+            "name": "Scott Stone",
+            "email": "datasources@chargeback.com"
+        }
+    ],
     "suggest": {
-        "magento-hackathon/magento-composer-installer": "*"
-    }
+        "magento-hackathon\/magento-composer-installer": "*"
+    },
+    "keywords": [
+        "openmage-module"
+    ]
 }
